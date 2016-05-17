@@ -30,30 +30,42 @@ function OnSlashCommand(args)
     Debug.Table("resourceScanIds", resourceScanIds)
 
     if (unicode.match(argument, "^a")) then
+        Debug.Log("Removing all scan reports")
         Notification("Removing ALL scan reports")
 
         for _, resourceScanId in pairs(resourceScanIds) do
+            Debug.Log("Removing scan report with id", resourceScanId)
             Game.AcceptResourceScan(resourceScanId, false)
         end
 
     elseif (unicode.match(argument, "^o")) then
+        Debug.Log("Checking for scan reports of other players")
+        Debug.Log("playerTargetId", playerTargetId)
         Notification("Removing scan reports of other player")
 
         for _, resourceScanId in pairs(resourceScanIds) do
-            local resourceScanInfo = Game.GetResourceScanInfo(resourceScanId)
+            local resourceScanInfo  = Game.GetResourceScanInfo(resourceScanId)
+            local isOwner           = isequal(resourceScanInfo.ownerId, playerTargetId)
+            Debug.Table("resourceScanInfo", {scanId = resourceScanId, isOwner = isOwner})
 
-            if (not isequal(resourceScanInfo.ownerId, playerTargetId)) then
+            if (not isOwner) then
+                Debug.Log("Removing scan report with id", resourceScanId)
                 Game.AcceptResourceScan(resourceScanId, false)
             end
         end
 
     else
+        Debug.Log("Checking for personal scan reports")
+        Debug.Log("playerTargetId", playerTargetId)
         Notification("Removing personal scan reports")
 
         for _, resourceScanId in pairs(resourceScanIds) do
-            local resourceScanInfo = Game.GetResourceScanInfo(resourceScanId)
+            local resourceScanInfo  = Game.GetResourceScanInfo(resourceScanId)
+            local isOwner           = isequal(resourceScanInfo.ownerId, playerTargetId)
+            Debug.Table("resourceScanInfo", {scanId = resourceScanId, isOwner = isOwner})
 
-            if (isequal(resourceScanInfo.ownerId, playerTargetId)) then
+            if (isOwner) then
+                Debug.Log("Removing scan report with id", resourceScanId)
                 Game.AcceptResourceScan(resourceScanId, false)
             end
         end
